@@ -2,11 +2,11 @@ package eksamen;
 
 //huske å importere javafx
 
-import eksamen.hotelldb.database;
+import eksamen.hotelldb.Database;
 
 public class Main {
     public static void main(String[] args) {
-         database db = new database();
+         Database db = new Database();
          db.databasehenting();
 
     }
