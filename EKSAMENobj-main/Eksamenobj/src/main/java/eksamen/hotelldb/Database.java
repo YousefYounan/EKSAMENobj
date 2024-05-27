@@ -1,29 +1,23 @@
 package eksamen.hotelldb;
 
-import eksamen.Main;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Database extends Main {
+public class Database {
 
-    ArrayList<ArrayList<Object>> romListe = new ArrayList<>();
+    private Map<String, ArrayList<ArrayList<Object>>> tableData = new HashMap<>();
 
-    public ArrayList<ArrayList<Object>> getRomListe() {
-        return romListe;
+    public Map<String, ArrayList<ArrayList<Object>>> getTableData() {
+        return tableData;
     }
 
-    public void setRomListe(ArrayList<ArrayList<Object>> romListe) {
-        this.romListe = romListe;
+    public ArrayList<ArrayList<Object>> getTable(String tableName) {
+        return tableData.getOrDefault(tableName, new ArrayList<>());
     }
 
     public void databasehenting() {
-
         String url = "jdbc:postgresql://localhost:5432/hotell";
         String user = "hotellsjef";
         String password = "eksamen2024";
@@ -36,39 +30,73 @@ public class Database extends Main {
         }
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            try (Statement statement = connection.createStatement()) {
-                String query = "SELECT * FROM tblRom";
-                ResultSet resultSetRom = statement.executeQuery(query);
-
-
-                while (resultSetRom.next()) {
-                    ArrayList<Object> row = new ArrayList<>();
-                    row.add(resultSetRom.getInt("romID"));
-                    row.add(resultSetRom.getString("romnummer"));
-                    row.add(resultSetRom.getString("romtype"));
-                    row.add(resultSetRom.getDouble("pris"));
-                    romListe.add(row);
-                }
-               // for (ArrayList<Object> row : romListe) {
-               //     for (Object elem : row) {
-               //         System.out.print(elem + " ");
-               //     }
-               //     System.out.println();
-               // }
-
-                resultSetRom.close();
-                System.out.println("Connection established successfully!");
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            fetchTableData(connection, "tblRom");
+            fetchTableData(connection, "tblKunde");
+            fetchTableData(connection, "tblReservasjon");
+            fetchTableData(connection, "tblInnsjekking");
+            fetchTableData(connection, "tblUtsjekking");
+            fetchTableData(connection, "tblAvbestilling");
+            System.out.println("All data fetched from database successfully!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    private void fetchTableData(Connection connection, String tableName) throws SQLException {
+        ArrayList<ArrayList<Object>> tableRows = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            String query = "SELECT * FROM " + tableName;
+            ResultSet resultSet = statement.executeQuery(query);
+
+            System.out.println("Fetching data from table: " + tableName);
+            while (resultSet.next()) {
+                ArrayList<Object> row = new ArrayList<>();
+                switch (tableName) {
+                    case "tblRom":
+                        row.add(resultSet.getInt("romID"));
+                        row.add(resultSet.getString("romnummer"));
+                        row.add(resultSet.getString("romtype"));
+                        row.add(resultSet.getDouble("pris"));
+                        break;
+                    case "tblKunde":
+                        row.add(resultSet.getInt("kundeID"));
+                        row.add(resultSet.getString("navn"));
+                        row.add(resultSet.getString("epost"));
+                        row.add(resultSet.getString("telefon"));
+                        break;
+                    case "tblReservasjon":
+                        row.add(resultSet.getInt("reservasjonID"));
+                        row.add(resultSet.getInt("kundeID"));
+                        row.add(resultSet.getInt("romID"));
+                        row.add(resultSet.getDate("startDato"));
+                        row.add(resultSet.getDate("sluttDato"));
+                        row.add(resultSet.getString("status"));
+                        break;
+                    case "tblInnsjekking":
+                        row.add(resultSet.getInt("innsjekkingID"));
+                        row.add(resultSet.getInt("reservasjonID"));
+                        row.add(resultSet.getTimestamp("innsjekkingDato"));
+                        break;
+                    case "tblUtsjekking":
+                        row.add(resultSet.getInt("utsjekkingID"));
+                        row.add(resultSet.getInt("reservasjonID"));
+                        row.add(resultSet.getTimestamp("utsjekkingDato"));
+                        break;
+                    case "tblAvbestilling":
+                        row.add(resultSet.getInt("avbestillingID"));
+                        row.add(resultSet.getInt("reservasjonID"));
+                        row.add(resultSet.getTimestamp("avbestillingDato"));
+                        break;
+                }
+                tableRows.add(row);
+            }
+            resultSet.close();
+            tableData.put(tableName, tableRows);
+
+            // Print out fetched data for debugging
+            System.out.println("Fetched data for " + tableName + ": " + tableRows);
+        }
+    }
+
+    // Add other methods like placeReservation, checkIn, checkOut, cancelReservation, etc.
 }
-
-
-
-

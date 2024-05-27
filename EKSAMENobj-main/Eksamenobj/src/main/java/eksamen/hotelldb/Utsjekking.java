@@ -3,16 +3,16 @@ package eksamen.hotelldb;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class Avbestillinger {
+public class Utsjekking {
     private Database db;
 
-    public Avbestillinger(Database db) {
+    public void Utsjekkinger(Database db) {
         this.db = db;
     }
 
     public void printut() {
-        ArrayList<ArrayList<Object>> avbestillingListe = db.getTable("tblAvbestilling");
-        printTableData("tblAvbestilling", avbestillingListe, new String[]{"Avbestilling ID", "Reservasjon ID", "Avbestilling Dato"});
+        ArrayList<ArrayList<Object>> utsjekkingListe = db.getTable("tblUtsjekking");
+        printTableData("tblUtsjekking", utsjekkingListe, new String[]{"Utsjekking ID", "Reservasjon ID", "Utsjekking Dato"});
     }
 
     private void printTableData(String tableName, ArrayList<ArrayList<Object>> tableRows, String[] columnNames) {
@@ -39,19 +39,19 @@ public class Avbestillinger {
         }
     }
 
-    public void cancelReservation(int reservasjonID, Timestamp avbestillingDato) {
+    public void checkOut(int reservasjonID, Timestamp utsjekkingDato) {
         String url = "jdbc:postgresql://localhost:5432/hotell";
         String user = "hotellsjef";
         String password = "eksamen2024";
 
-        String query = "INSERT INTO tblAvbestilling (reservasjonID, avbestillingDato) VALUES (?, ?)";
+        String query = "INSERT INTO tblUtsjekking (reservasjonID, utsjekkingDato) VALUES (?, ?)";
 
         try (Connection connection = DriverManager.getConnection(url, user, password);
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, reservasjonID);
-            preparedStatement.setTimestamp(2, avbestillingDato);
+            preparedStatement.setTimestamp(2, utsjekkingDato);
             preparedStatement.executeUpdate();
-            System.out.println("Avbestilling vellykket!");
+            System.out.println("Utsjekking vellykket!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
