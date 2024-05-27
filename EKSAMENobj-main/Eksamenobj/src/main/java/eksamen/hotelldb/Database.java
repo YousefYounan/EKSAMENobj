@@ -8,6 +8,9 @@ import java.util.Map;
 public class Database {
 
     private Map<String, ArrayList<ArrayList<Object>>> tableData = new HashMap<>();
+    private String url = "jdbc:postgresql://localhost:5432/hotell";
+    private String user = "hotellsjef";
+    private String password = "eksamen2024";
 
     public Map<String, ArrayList<ArrayList<Object>>> getTableData() {
         return tableData;
@@ -18,10 +21,6 @@ public class Database {
     }
 
     public void databasehenting() {
-        String url = "jdbc:postgresql://localhost:5432/hotell";
-        String user = "hotellsjef";
-        String password = "eksamen2024";
-
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
@@ -36,10 +35,33 @@ public class Database {
             fetchTableData(connection, "tblInnsjekking");
             fetchTableData(connection, "tblUtsjekking");
             fetchTableData(connection, "tblAvbestilling");
-            System.out.println("All data fetched from database successfully!");
+            System.out.println("All data fetched from the database successfully!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<ArrayList<Object>> searchByKey(String tableName, String keyColumn, int keyValue) {
+        ArrayList<ArrayList<Object>> searchResult = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             Statement statement = connection.createStatement()) {
+            String query = "SELECT * FROM " + tableName + " WHERE " + keyColumn + " = " + keyValue;
+            ResultSet resultSet = statement.executeQuery(query);
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next()) {
+                ArrayList<Object> row = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.add(resultSet.getObject(i));
+                }
+                searchResult.add(row);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return searchResult;
     }
 
     private void fetchTableData(Connection connection, String tableName) throws SQLException {
@@ -93,10 +115,7 @@ public class Database {
             resultSet.close();
             tableData.put(tableName, tableRows);
 
-            // Print out fetched data for debugging
             System.out.println("Fetched data for " + tableName + ": " + tableRows);
         }
     }
-
-    // Add other methods like placeReservation, checkIn, checkOut, cancelReservation, etc.
 }

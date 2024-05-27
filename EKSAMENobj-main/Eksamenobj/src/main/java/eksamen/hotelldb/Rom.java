@@ -1,6 +1,7 @@
 package eksamen.hotelldb;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Rom {
     private Database db;
@@ -36,5 +37,17 @@ public class Rom {
             }
             System.out.println();
         }
+
+    }
+    public boolean checkIfRoomExists(int romID) {
+        Map<String, ArrayList<ArrayList<Object>>> tableData = db.getTableData();
+        ArrayList<ArrayList<Object>> romListe = tableData.get("tblRom");
+        for (ArrayList<Object> row : romListe) {
+            int id = (int) row.get(0); // Assuming the first column is the ID
+            if (id == romID) {
+                return true;
+            }
+        }
+        return false;
     }
 }

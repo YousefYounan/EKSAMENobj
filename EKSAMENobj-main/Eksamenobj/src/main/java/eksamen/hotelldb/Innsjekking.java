@@ -6,7 +6,8 @@ import java.util.ArrayList;
 public class Innsjekking {
     private Database db;
 
-    public void Innsjekkinger(Database db) {
+    // Constructor
+    public Innsjekking(Database db) {
         this.db = db;
     }
 
