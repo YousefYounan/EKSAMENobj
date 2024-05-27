@@ -23,11 +23,6 @@ public class Database {
     public void databasehenting() {
         try {
             Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             fetchTableData(connection, "tblRom");
             fetchTableData(connection, "tblKunde");
@@ -36,7 +31,8 @@ public class Database {
             fetchTableData(connection, "tblUtsjekking");
             fetchTableData(connection, "tblAvbestilling");
             System.out.println("All data fetched from the database successfully!");
-        } catch (SQLException e) {
+            }
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
     }
@@ -64,57 +60,47 @@ public class Database {
         return searchResult;
     }
 
+    public void bookRoom(int kundeID, int romID, Date startDato, Date sluttDato) {
+        String insertSQL = "INSERT INTO tblReservasjon (kundeID, romID, startDato, sluttDato, status) VALUES (?, ?, ?, ?, 'bestilt')";
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+            preparedStatement.setInt(1, kundeID);
+            preparedStatement.setInt(2, romID);
+            preparedStatement.setDate(3, startDato);
+            preparedStatement.setDate(4, sluttDato);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void cancelReservation(int reservasjonID) {
+        String updateSQL = "UPDATE tblReservasjon SET status = 'avbestilt' WHERE reservasjonID = ?";
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
+            preparedStatement.setInt(1, reservasjonID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void fetchTableData(Connection connection, String tableName) throws SQLException {
         ArrayList<ArrayList<Object>> tableRows = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             String query = "SELECT * FROM " + tableName;
             ResultSet resultSet = statement.executeQuery(query);
-
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
             System.out.println("Fetching data from table: " + tableName);
             while (resultSet.next()) {
                 ArrayList<Object> row = new ArrayList<>();
-                switch (tableName) {
-                    case "tblRom":
-                        row.add(resultSet.getInt("romID"));
-                        row.add(resultSet.getString("romnummer"));
-                        row.add(resultSet.getString("romtype"));
-                        row.add(resultSet.getDouble("pris"));
-                        break;
-                    case "tblKunde":
-                        row.add(resultSet.getInt("kundeID"));
-                        row.add(resultSet.getString("navn"));
-                        row.add(resultSet.getString("epost"));
-                        row.add(resultSet.getString("telefon"));
-                        break;
-                    case "tblReservasjon":
-                        row.add(resultSet.getInt("reservasjonID"));
-                        row.add(resultSet.getInt("kundeID"));
-                        row.add(resultSet.getInt("romID"));
-                        row.add(resultSet.getDate("startDato"));
-                        row.add(resultSet.getDate("sluttDato"));
-                        row.add(resultSet.getString("status"));
-                        break;
-                    case "tblInnsjekking":
-                        row.add(resultSet.getInt("innsjekkingID"));
-                        row.add(resultSet.getInt("reservasjonID"));
-                        row.add(resultSet.getTimestamp("innsjekkingDato"));
-                        break;
-                    case "tblUtsjekking":
-                        row.add(resultSet.getInt("utsjekkingID"));
-                        row.add(resultSet.getInt("reservasjonID"));
-                        row.add(resultSet.getTimestamp("utsjekkingDato"));
-                        break;
-                    case "tblAvbestilling":
-                        row.add(resultSet.getInt("avbestillingID"));
-                        row.add(resultSet.getInt("reservasjonID"));
-                        row.add(resultSet.getTimestamp("avbestillingDato"));
-                        break;
+                for (int i = 1; i <= columnCount; i++) {
+                    row.add(resultSet.getObject(i));
                 }
                 tableRows.add(row);
             }
-            resultSet.close();
             tableData.put(tableName, tableRows);
-
             System.out.println("Fetched data for " + tableName + ": " + tableRows);
         }
     }
