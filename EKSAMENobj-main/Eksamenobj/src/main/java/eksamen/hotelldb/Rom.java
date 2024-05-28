@@ -2,6 +2,7 @@ package eksamen.hotelldb;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Rom {
     private Database db;
@@ -52,7 +53,23 @@ public class Rom {
     }
 
     // Legge til Rom
-    public void LeggTilRom(int id, String romNummer, String romType, int pris) {
+    public void LeggTilRom() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Skriv inn ID for rommet du vil legge til: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("Skriv inn rom nummer:  ");
+        String romNummer = scanner.nextLine();
+
+        System.out.println("Skriv inn rom type:  ");
+        String romType = scanner.nextLine();
+
+        System.out.println("Skriv inn pris for rommet: ");
+        int pris = scanner.nextInt();
+
+
         db.LeggeTilRom(id, romNummer, romType, pris);
 
         ArrayList<ArrayList<Object>> romListe = db.getTable("tblRom");
@@ -64,15 +81,20 @@ public class Rom {
 
         romListe.add(nyRad);
 
-
+        System.out.println("Rommet ble lagt til!");
     }
 
     // Slette Rom
-    public void sletteRom(int id) {
+    public void sletteRom() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Skriv inn ID for rommet du vil slette: ");
+        int id = scanner.nextInt();
+
         db.SletteRom(id);
        ArrayList<ArrayList<Object>> romListe = db.getTable("tblRom");
        romListe.removeIf(rad -> (int) rad.get(0) == id);
 
-
+        System.out.println("Rommet ble slettet!");
     }
 }
