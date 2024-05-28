@@ -64,34 +64,5 @@ public class Main {
             }
         }
     }
-
-
-
-
-    // Her blir du spurt om informasjon for å søke etter rom
-    public static void searchByKey(Database db) {
-        Scanner scanner = new Scanner(System.in);
-        // Her trenger du tabellnavn
-        System.out.println("Enter the table name to search in (e.g., tblReservasjon): ");
-        String tableName = scanner.nextLine();
-        // Her trenger du kolonnenavn, f.eks romID
-        System.out.println("Enter the key column name: ");
-        String keyColumn = scanner.nextLine();
-        // Her oppgir du romID f.eks 2.
-        System.out.println("Enter the key value: ");
-        int keyValue = scanner.nextInt();
-        ArrayList<ArrayList<Object>> searchResult = db.searchByKey(tableName, keyColumn, keyValue);
-        printSearchResult(searchResult);
-    }
-
-    private static void printSearchResult(ArrayList<ArrayList<Object>> searchResult) {
-        System.out.println("Search Result:");
-        for (ArrayList<Object> row : searchResult) {
-            for (Object cell : row) {
-                System.out.print(cell + "\t");
-            }
-            System.out.println();
-        }
-    }
 }
 
