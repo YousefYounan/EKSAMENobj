@@ -1,6 +1,8 @@
 package eksamen;
 
-import eksamen.hotelldb.*;
+import eksamen.hotelldb.Avbestillinger;
+import eksamen.hotelldb.Database;
+import eksamen.hotelldb.Reservasjoner;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -11,50 +13,72 @@ public class Main {
         Database db = new Database();
         db.databasehenting();
 
-        Rom rom = new Rom(db);
-        rom.printut();
 
-        Kunder kunder = new Kunder(db);
-        kunder.printut();
+
+        displayAllData(db);
 
         Reservasjoner reservasjoner = new Reservasjoner(db);
-        reservasjoner.printut();
-
-        Innsjekking innsjekking = new Innsjekking(db); // Corrected class name
-        innsjekking.printut(); // Corrected method invocation
-
-        Utsjekking utsjekking = new Utsjekking(db); // Corrected class name
-        utsjekking.printut(); // Corrected method invocation
-
         Avbestillinger avbestillinger = new Avbestillinger(db);
-        avbestillinger.printut();
 
-        searchByKey(db);
-    }
-    // Her blir du spurt om informasjon for å søke etter rom
-    public static void searchByKey(Database db) {
         Scanner scanner = new Scanner(System.in);
-        // Her trenger du tabellnavn
-        System.out.println("Enter the table name to search in (e.g., tblReservasjon): ");
-        String tableName = scanner.nextLine();
-        // Her trenger du kolonnenavn, f.eks romID
-        System.out.println("Enter the key column name: ");
-        String keyColumn = scanner.nextLine();
-        // Her oppgir du romID f.eks 2.
-        System.out.println("Enter the key value: ");
-        int keyValue = scanner.nextInt();
-        ArrayList<ArrayList<Object>> searchResult = db.searchByKey(tableName, keyColumn, keyValue);
-        printSearchResult(searchResult);
+        int choice;
+
+        do {
+            displayMenu();
+            choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    reservasjoner.viewReservations(db);
+                    break;
+                case 2:
+                    reservasjoner.searchRooms();
+                    break;
+                case 3:
+                    reservasjoner.bookRoom();
+                    break;
+                case 4:
+                    avbestillinger.cancelReservation();
+                    break;
+                case 5:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+            }
+        } while (choice != 5);
+
+        scanner.close();
+
     }
 
-    private static void printSearchResult(ArrayList<ArrayList<Object>> searchResult) {
-        System.out.println("Search Result:");
-        for (ArrayList<Object> row : searchResult) {
+    private static void displayAllData(Database db) {
+        printTableData("tblRom", db);
+        printTableData("tblKunde", db);
+        printTableData("tblReservasjon", db);
+        printTableData("tblInnsjekking", db);
+        printTableData("tblUtsjekking", db);
+        printTableData("tblAvbestilling", db);
+    }
+
+    private static void displayMenu() {
+        System.out.println("\n=== Hotel Management System ===");
+        System.out.println("1. Se din Reservasjon");
+        System.out.println("2. Søk etter et rom");
+        System.out.println("3. Book et rom");
+        System.out.println("4. Kanseller Reservasjon");
+        System.out.println("5. Avslutt");
+        System.out.print("Enter your choice: ");
+    }
+
+    private static void printTableData(String tableName, Database db) {
+        ArrayList<ArrayList<Object>> tableData = db.getTable(tableName);
+        System.out.println("Data for table: " + tableName);
+        for (ArrayList<Object> row : tableData) {
             for (Object cell : row) {
                 System.out.print(cell + "\t");
             }
             System.out.println();
         }
+        System.out.println();
     }
 }
-
