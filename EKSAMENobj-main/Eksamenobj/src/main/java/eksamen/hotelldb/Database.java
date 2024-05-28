@@ -19,7 +19,7 @@ public class Database {
     public ArrayList<ArrayList<Object>> getTable(String tableName) {
         return tableData.getOrDefault(tableName, new ArrayList<>());
     }
-    
+
     public void databasehenting() {
         try {
             Class.forName("org.postgresql.Driver");
