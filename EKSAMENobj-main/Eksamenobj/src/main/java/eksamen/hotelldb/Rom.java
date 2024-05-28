@@ -50,4 +50,29 @@ public class Rom {
         }
         return false;
     }
+
+    // Legge til Rom
+    public void LeggTilRom(int id, String romNummer, String romType, int pris) {
+        db.LeggeTilRom(id, romNummer, romType, pris);
+
+        ArrayList<ArrayList<Object>> romListe = db.getTable("tblRom");
+        ArrayList<Object> nyRad = new ArrayList<>();
+        nyRad.add(id); // Rom ID
+        nyRad.add(romNummer); // Romnummer
+        nyRad.add(romType); // Romtype
+        nyRad.add(pris); // Pris
+
+        romListe.add(nyRad);
+
+
+    }
+
+    // Slette Rom
+    public void sletteRom(int id) {
+        db.SletteRom(id);
+       ArrayList<ArrayList<Object>> romListe = db.getTable("tblRom");
+       romListe.removeIf(rad -> (int) rad.get(0) == id);
+
+
+    }
 }

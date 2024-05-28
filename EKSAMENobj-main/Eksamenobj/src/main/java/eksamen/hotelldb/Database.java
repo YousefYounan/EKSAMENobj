@@ -19,7 +19,7 @@ public class Database {
     public ArrayList<ArrayList<Object>> getTable(String tableName) {
         return tableData.getOrDefault(tableName, new ArrayList<>());
     }
-
+    
     public void databasehenting() {
         try {
             Class.forName("org.postgresql.Driver");
@@ -116,6 +116,37 @@ public class Database {
             tableData.put(tableName, tableRows);
 
             System.out.println("Fetched data for " + tableName + ": " + tableRows);
+        }
+    }
+
+
+
+
+
+
+    // LEGGE TIL OG SLETTE ROM --------------------------------------------
+    public void LeggeTilRom(int romID, String romNummer, String romType, int pris) {
+        String insertSQL = "INSERT INTO tblrom (romid, romnummer, romtype, pris) VALUES (?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+            preparedStatement.setInt(1, romID);
+            preparedStatement.setString(2, romNummer);
+            preparedStatement.setString(3, romType);
+            preparedStatement.setInt(4, pris);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void SletteRom(int romID) {
+        String insertSQL = "DELETE FROM tblrom WHERE romid = ?";
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+            preparedStatement.setInt(1, romID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
