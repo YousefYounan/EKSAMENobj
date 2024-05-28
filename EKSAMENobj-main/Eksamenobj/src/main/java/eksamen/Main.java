@@ -1,10 +1,12 @@
 package eksamen;
 
+import eksamen.hotelldb.Avbestillinger;
 import eksamen.hotelldb.Database;
 import eksamen.hotelldb.Reservasjoner;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -16,6 +18,7 @@ public class Main {
         displayAllData(db);
 
         Reservasjoner reservasjoner = new Reservasjoner(db);
+        Avbestillinger avbestillinger = new Avbestillinger(db);
 
         Scanner scanner = new Scanner(System.in);
         int choice;
@@ -28,18 +31,21 @@ public class Main {
                     reservasjoner.viewReservations(db);
                     break;
                 case 2:
-                    reservasjoner.bookRoom();
+                    reservasjoner.searchRooms();
                     break;
                 case 3:
-                    reservasjoner.cancelReservation();
+                    reservasjoner.bookRoom();
                     break;
                 case 4:
+                    avbestillinger.cancelReservation();
+                    break;
+                case 5:
                     System.out.println("Exiting...");
                     break;
                 default:
                     System.out.println("Invalid choice. Please enter a number between 1 and 4.");
             }
-        } while (choice != 4);
+        } while (choice != 5);
 
         scanner.close();
 
@@ -57,9 +63,10 @@ public class Main {
     private static void displayMenu() {
         System.out.println("\n=== Hotel Management System ===");
         System.out.println("1. Se din Reservasjon");
-        System.out.println("2. Book et rom");
-        System.out.println("3. Kanseller Reservasjon");
-        System.out.println("4. Avslutt");
+        System.out.println("2. Søk etter et rom");
+        System.out.println("3. Book et rom");
+        System.out.println("4. Kanseller Reservasjon");
+        System.out.println("5. Avslutt");
         System.out.print("Enter your choice: ");
     }
 

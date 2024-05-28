@@ -16,10 +16,29 @@ public class Database {
         return tableData;
     }
 
+
     public ArrayList<ArrayList<Object>> getTable(String tableName) {
         return tableData.getOrDefault(tableName, new ArrayList<>());
     }
 
+    public void setTable(String tableName, ArrayList<ArrayList<Object>> data) {
+        tableData.put(tableName, data);
+        if ("tblReservasjon".equals(tableName)) {
+            ArrayList<ArrayList<Object>> reservasjonListe = tableData.getOrDefault(tableName, new ArrayList<>());
+            ArrayList<Object> nyRad = new ArrayList<>();
+            nyRad.add(data.size() + 1);
+            nyRad.add(data.get(0).get(1)); // Kunde ID
+            nyRad.add(data.get(0).get(2)); // Rom ID
+            nyRad.add(data.get(0).get(3)); // Start dato
+            nyRad.add(data.get(0).get(4)); // Slutt dato
+            nyRad.add(data.get(0).get(5)); // Status
+
+            reservasjonListe.add(nyRad);
+            tableData.put(tableName, reservasjonListe);
+        }
+    }
+
+    // Henter informasjon fra databasen
     public void databasehenting() {
         try {
             Class.forName("org.postgresql.Driver");
@@ -60,6 +79,37 @@ public class Database {
         return searchResult;
     }
 
+    public ArrayList<ArrayList<Object>> searchAvailableRooms(Date startDate, Date endDate, double minPrice, double maxPrice) {
+        ArrayList<ArrayList<Object>> availableRooms = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             Statement statement = connection.createStatement()) {
+            // SQL query som søker basert på kriterer.
+            String query = "SELECT * FROM tblRom WHERE pris >= " + minPrice + " AND pris <= " + maxPrice +
+                    " AND romID NOT IN (" +
+                    "   SELECT romID FROM tblReservasjon WHERE ('" + startDate + "' BETWEEN startDato AND sluttDato" +
+                    "   OR '" + endDate + "' BETWEEN startDato AND sluttDato)" +
+                    "   OR ('" + startDate + "' <= startDato AND '" + endDate + "' >= sluttDato)" +
+                    ")";
+
+            ResultSet resultSet = statement.executeQuery(query);
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next()) {
+                ArrayList<Object> row = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.add(resultSet.getObject(i));
+                }
+                availableRooms.add(row);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return availableRooms;
+    }
+
+
+    // For å booke et rom
     public void bookRoom(int kundeID, int romID, Date startDato, Date sluttDato) {
         String insertSQL = "INSERT INTO tblReservasjon (kundeID, romID, startDato, sluttDato, status) VALUES (?, ?, ?, ?, 'bestilt')";
         try (Connection connection = DriverManager.getConnection(url, user, password);
@@ -74,17 +124,29 @@ public class Database {
         }
     }
 
-    public void cancelReservation(int reservasjonID) {
+    // For å kansellere en reservasjon
+    public void cancelReservation(int reservasjonID, Timestamp avbestillingDato) {
         String updateSQL = "UPDATE tblReservasjon SET status = 'avbestilt' WHERE reservasjonID = ?";
+        String insertSQL = "INSERT INTO tblAvbestilling (reservasjonID, avbestillingDato) VALUES (?, ?)";
         try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
-            preparedStatement.setInt(1, reservasjonID);
-            preparedStatement.executeUpdate();
+             PreparedStatement updateStatement = connection.prepareStatement(updateSQL);
+             PreparedStatement insertStatement = connection.prepareStatement(insertSQL)) {
+            // Oppdaterer statusen i reservasjoner til 'avbestilt'
+            updateStatement.setInt(1, reservasjonID);
+            updateStatement.executeUpdate();
+
+            // Setter avbestilling inn i  tblAvbestilling
+            insertStatement.setInt(1, reservasjonID);
+            insertStatement.setTimestamp(2, avbestillingDato);
+            insertStatement.executeUpdate();
+
+            System.out.println("Reservasjon kansellert og lagt til i avbestillinger!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    //Henter data fra tabell
     private void fetchTableData(Connection connection, String tableName) throws SQLException {
         ArrayList<ArrayList<Object>> tableRows = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {

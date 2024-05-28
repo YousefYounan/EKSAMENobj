@@ -1,11 +1,19 @@
 package eksamen.hotelldb;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Avbestillinger {
     private Database db;
 
+    private Map<String, ArrayList<ArrayList<Object>>> tableData = new HashMap<>();
+    private String url = "jdbc:postgresql://localhost:5432/hotell";
+    private String user = "hotellsjef";
+    private String password = "eksamen2024";
+
+    public Map<String, ArrayList<ArrayList<Object>>> getTableData() {
+        return tableData;
+    }
     public Avbestillinger(Database db) {
         this.db = db;
     }
@@ -21,16 +29,16 @@ public class Avbestillinger {
             return;
         }
 
-        // Print table name
+        // Printer tabellnavn
         System.out.println("\nData for " + tableName + ":");
 
-        // Print column headers
+        // Printer kolonne overskrifter
         for (String columnName : columnNames) {
             System.out.printf("%-15s", columnName);
         }
         System.out.println();
 
-        // Print rows
+        // Printer rader
         for (ArrayList<Object> row : tableRows) {
             for (Object cell : row) {
                 System.out.printf("%-15s", cell);
@@ -39,21 +47,20 @@ public class Avbestillinger {
         }
     }
 
-    public void cancelReservation(int reservasjonID, Timestamp avbestillingDato) {
-        String url = "jdbc:postgresql://localhost:5432/hotell";
-        String user = "hotellsjef";
-        String password = "eksamen2024";
+    public void cancelReservation() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            System.out.println("Oppgi Reservasjon ID for å kansellere ditt opphold: ");
+            int reservasjonID = scanner.nextInt();
 
-        String query = "INSERT INTO tblAvbestilling (reservasjonID, avbestillingDato) VALUES (?, ?)";
+            // Får timestamp for avbestilling
+            Timestamp avbestillingDato = new Timestamp(System.currentTimeMillis());
 
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, reservasjonID);
-            preparedStatement.setTimestamp(2, avbestillingDato);
-            preparedStatement.executeUpdate();
-            System.out.println("Avbestilling vellykket!");
-        } catch (SQLException e) {
-            e.printStackTrace();
+            // Henter cancelreservation med reservasjonID og avbestillingDato
+            db.cancelReservation(reservasjonID, avbestillingDato);
+            System.out.println("Reservasjon kansellert og lagt til i avbestillinger!");
+        } catch (InputMismatchException e) {
+            System.out.println("Ugyldig data. Vennligst oppgi en gyldig Reservasjon ID (et tall).");
         }
     }
 }
