@@ -59,9 +59,6 @@ public class Main {
                         romTilbake = true;
                     }
                 }
-
-
-
             }
             // Tui for Resepsjonist del for innsjekking og utsjekking
             if (valg == 2) {
@@ -71,7 +68,8 @@ public class Main {
                     System.out.println("1. Legg til Innsjekk");
                     System.out.println("2. Legg til Utsjekk");
                     System.out.println("3. Legg til Kunde");
-                    System.out.println("4. Tilbake til hovedmeny");
+                    System.out.println("4. Se alle Kunder");
+                    System.out.println("5. Tilbake til hovedmeny");
                     int valgResepsjon = scanner.nextInt();
 
                     // Innsjekking
@@ -86,16 +84,18 @@ public class Main {
 
                     // Legg til kunde
                     if (valgResepsjon == 3) {
-                        // kunde.funskjon her
+                        kunder.leggTilKunde();
                     }
 
+                    // Legg til kunde
+                    if (valgResepsjon == 4) {
+                        kunder.printut();
+                    }
 
                     // tilbake til hovedmeny
-                    if (valgResepsjon == 4) {
+                    if (valgResepsjon == 5) {
                         resepsjonistTilbake = true;
                     }
-
-
                 }
             }
             // Tui for Gjest del for å søke etter og bestille rom, samt se og avbestille egne reservasjoner

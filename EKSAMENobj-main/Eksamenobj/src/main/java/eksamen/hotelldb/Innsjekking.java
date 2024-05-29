@@ -62,6 +62,7 @@ public class Innsjekking {
             preparedStatement.executeUpdate();
             System.out.println("Innsjekking vellykket!");
 
+
             //Henting av nyeste ID
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys(); //Henter nyeste ID
             int innsjekkingID = 0; // Lager en variabel for å lagre ID

@@ -16,12 +16,12 @@ public class Reservasjoner {
 
     public void viewReservations(Database db) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your Reservation ID to view your reservation details: ");
+        System.out.println("Skriv inn reservasjonID for å se din reservasjon: ");
         int reservationID = scanner.nextInt();
         scanner.nextLine(); // Consume newline character
 
         ArrayList<ArrayList<Object>> searchResult = db.searchByKey("tblReservasjon", "reservasjonID", reservationID);
-        printTableData("Search Result", searchResult, new String[]{"Reservasjon ID", "Kunde ID", "Rom ID", "Start Dato", "Slutt Dato", "Status"});
+        printTableData("Resultat: ", searchResult, new String[]{"Reservasjon ID", "Kunde ID", "Rom ID", "Start Dato", "Slutt Dato", "Status"});
     }
 
 
