@@ -12,10 +12,6 @@ public class Reservasjoner {
         this.db = db;
     }
 
-    public void printut() {
-        ArrayList<ArrayList<Object>> reservasjonListe = db.getTable("tblReservasjon");
-        printTableData("tblReservasjon", reservasjonListe, new String[]{"Reservasjon ID", "Kunde ID", "Rom ID", "Start Dato", "Slutt Dato", "Status"});
-    }
 
     public void viewReservations(Database db) {
         Scanner scanner = new Scanner(System.in);

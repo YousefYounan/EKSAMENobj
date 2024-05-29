@@ -40,9 +40,7 @@ public class Main {
                     System.out.println("Invalid choice. Please enter a number between 1 and 4.");
             }
         } while (choice != 4);
-
         scanner.close();
-
     }
 
     private static void displayAllData(Database db) {

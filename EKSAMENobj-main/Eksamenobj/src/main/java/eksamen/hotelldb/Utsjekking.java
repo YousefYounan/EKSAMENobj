@@ -65,7 +65,12 @@ public class Utsjekking {
 
 
 
-            int utsjekkingID = fetchLatestUtsjekkingID(connection); //Funskjon for å hente inn utsjekkingsID
+            //Henting av nyeste ID
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys(); //Henter nyeste ID
+            int utsjekkingID = 0; // Lager en variabel for å lagre ID
+            if(generatedKeys.next()){ //Gjør en test på ID
+                utsjekkingID = generatedKeys.getInt(1); // Legger Verdien i ID inn i innsjekkingID
+            }
 
             //Legger til data inn i Hash Map.
             ArrayList<ArrayList<Object>> utsjekkingListe = db.getTable("tblUtsjekking");
