@@ -19,6 +19,11 @@ public class Database {
     public ArrayList<ArrayList<Object>> getTable(String tableName) {
         return tableData.getOrDefault(tableName, new ArrayList<>());
     }
+    public void setTable(String tableName, ArrayList<ArrayList<Object>> data) {
+        tableData.put(tableName, data);
+
+    }
+
 
     public void databasehenting() {
         try {
@@ -104,4 +109,6 @@ public class Database {
             System.out.println("Fetched data for " + tableName + ": " + tableRows);
         }
     }
+
+
 }
