@@ -57,6 +57,7 @@ public class Reservasjoner {
 
     public void bookRoom() {
         Scanner scanner = new Scanner(System.in);
+        int reservasjonID = -1;
         try {
             System.out.println("Oppgi kundeID; ");
             int kundeID = scanner.nextInt();
@@ -72,30 +73,12 @@ public class Reservasjoner {
             System.out.println("Velg ønsket rom ID: ");
             int romID = scanner.nextInt();
 
-            db.bookRoom(kundeID, romID, startDato, sluttDato);
-            System.out.println("Rommet ble booket! ReservasjonsID: ");
+            reservasjonID=db.bookRoom(kundeID, romID, startDato, sluttDato);
+            System.out.println("Rommet ble booket! ReservasjonsID: " + reservasjonID);
         } catch (InputMismatchException e) {
             System.out.println("Ugyldig data. Vennligst oppgi korrekt data.");
         } catch (IllegalArgumentException e) {
             System.out.println("Ugyldig dato format. Vennligst bruk YYYY-MM-DD.");
-        }
-    }
-
-
-    public void cancelReservation() {
-        Scanner scanner = new Scanner(System.in);
-        try {
-            System.out.println("Oppgi Reservasjon ID for å kansellere ditt opphold: ");
-            int reservasjonID = scanner.nextInt();
-
-            // Får timestamp for avbestilling
-            Timestamp avbestillingDato = new Timestamp(System.currentTimeMillis());
-
-            // Kansellerer bestillingen i reservasjon og legger den til i 'avbestilt' tabell
-            db.cancelReservation(reservasjonID, avbestillingDato);
-            System.out.println("Reservasjon kansellert og lagt til i avbestillinger!");
-        } catch (InputMismatchException e) {
-            System.out.println("Ugyldig data. Vennligst oppgi en gyldig Reservasjon ID (et tall).");
         }
     }
 

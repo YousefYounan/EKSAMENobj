@@ -68,10 +68,23 @@ public class Main {
                 boolean resepsjonistTilbake = false;
                 while (!resepsjonistTilbake) {
                     System.out.println("\n=== Velg ved å skrive inn tallet ===");
+                    System.out.println("1. Legg til Innsjekk");
+                    System.out.println("2. Legg til Utsjekk");
+                    System.out.println("3. Tilbake til hovedmeny");
                     int valgResepsjon = scanner.nextInt();
 
+                    // Innsjekking
+                    if (valgResepsjon == 1) {
+                        innsjekking.checkIn();
+                    }
+
+                    // Utsjekking
+                    if (valgResepsjon == 2) {
+                        utsjekking.checkOut();
+                    }
+
                     // tilbake til hovedmeny
-                    if (valgResepsjon == 5) {
+                    if (valgResepsjon == 3) {
                         resepsjonistTilbake = true;
                     }
 

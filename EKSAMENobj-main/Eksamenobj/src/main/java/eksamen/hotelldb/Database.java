@@ -110,18 +110,29 @@ public class Database {
 
 
     // For å booke et rom
-    public void bookRoom(int kundeID, int romID, Date startDato, Date sluttDato) {
+    public int bookRoom(int kundeID, int romID, Date startDato, Date sluttDato) {
+        int reservasjonID = -1;
         String insertSQL = "INSERT INTO tblReservasjon (kundeID, romID, startDato, sluttDato, status) VALUES (?, ?, ?, ?, 'bestilt')";
         try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, kundeID);
             preparedStatement.setInt(2, romID);
             preparedStatement.setDate(3, startDato);
             preparedStatement.setDate(4, sluttDato);
             preparedStatement.executeUpdate();
+
+            // For å hente generert ID
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    reservasjonID = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Booking feilet, ingen ID hentet");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return reservasjonID;
     }
 
     // For å kansellere en reservasjon
@@ -139,8 +150,6 @@ public class Database {
             insertStatement.setInt(1, reservasjonID);
             insertStatement.setTimestamp(2, avbestillingDato);
             insertStatement.executeUpdate();
-
-            System.out.println("Reservasjon kansellert og lagt til i avbestillinger!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
