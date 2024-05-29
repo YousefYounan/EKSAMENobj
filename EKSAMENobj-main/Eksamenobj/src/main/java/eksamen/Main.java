@@ -70,7 +70,8 @@ public class Main {
                     System.out.println("\n=== Velg ved å skrive inn tallet ===");
                     System.out.println("1. Legg til Innsjekk");
                     System.out.println("2. Legg til Utsjekk");
-                    System.out.println("3. Tilbake til hovedmeny");
+                    System.out.println("3. Legg til Kunde");
+                    System.out.println("4. Tilbake til hovedmeny");
                     int valgResepsjon = scanner.nextInt();
 
                     // Innsjekking
@@ -83,8 +84,14 @@ public class Main {
                         utsjekking.checkOut();
                     }
 
-                    // tilbake til hovedmeny
+                    // Legg til kunde
                     if (valgResepsjon == 3) {
+                        // kunde.funskjon her
+                    }
+
+
+                    // tilbake til hovedmeny
+                    if (valgResepsjon == 4) {
                         resepsjonistTilbake = true;
                     }
 
