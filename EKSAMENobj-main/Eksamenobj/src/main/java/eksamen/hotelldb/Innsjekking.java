@@ -23,16 +23,16 @@ public class Innsjekking {
             return;
         }
 
-        // Print table name
+        // Printer tabell navn
         System.out.println("\nData for " + tableName + ":");
 
-        // Print column headers
+        // Printer kolonne navn
         for (String columnName : columnNames) {
             System.out.printf("%-15s", columnName);
         }
         System.out.println();
 
-        // Print rows
+        // Printer rader
         for (ArrayList<Object> row : tableRows) {
             for (Object cell : row) {
                 System.out.printf("%-15s", cell);

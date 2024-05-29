@@ -7,9 +7,6 @@ public class Avbestillinger {
     private Database db;
 
     private Map<String, ArrayList<ArrayList<Object>>> tableData = new HashMap<>();
-    private String url = "jdbc:postgresql://localhost:5432/hotell";
-    private String user = "hotellsjef";
-    private String password = "eksamen2024";
 
     public Map<String, ArrayList<ArrayList<Object>>> getTableData() {
         return tableData;
