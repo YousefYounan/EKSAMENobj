@@ -54,6 +54,7 @@ public class Rom {
 
     // Legge til Rom
     public void LeggTilRom() {
+        // input variablene for rommet
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Skriv inn ID for rommet du vil legge til: ");
@@ -69,9 +70,10 @@ public class Rom {
         System.out.println("Skriv inn pris for rommet: ");
         int pris = scanner.nextInt();
 
-
+        // legge til rommet i databasen
         db.LeggeTilRom(id, romNummer, romType, pris);
 
+        // legge til rommet i Hashmappet
         ArrayList<ArrayList<Object>> romListe = db.getTable("tblRom");
         ArrayList<Object> nyRad = new ArrayList<>();
         nyRad.add(id); // Rom ID
@@ -86,12 +88,15 @@ public class Rom {
 
     // Slette Rom
     public void sletteRom() {
+        // input id for slette rom
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Skriv inn ID for rommet du vil slette: ");
         int id = scanner.nextInt();
 
+        // slette rom fra db
         db.SletteRom(id);
+        // slette rom fra Hashmappet
        ArrayList<ArrayList<Object>> romListe = db.getTable("tblRom");
        romListe.removeIf(rad -> (int) rad.get(0) == id);
 
